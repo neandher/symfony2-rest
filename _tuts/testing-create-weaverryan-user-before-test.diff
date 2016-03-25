@@ -1,0 +1,61 @@
+diff --git a/src/AppBundle/Test/ApiTestCase.php b/src/AppBundle/Test/ApiTestCase.php
+index 1ea4492..106659b 100644
+--- a/src/AppBundle/Test/ApiTestCase.php
++++ b/src/AppBundle/Test/ApiTestCase.php
+@@ -2,7 +2,9 @@
+ 
+ namespace AppBundle\Test;
+ 
++use AppBundle\Entity\User;
+ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
++use Doctrine\ORM\EntityManager;
+ use Exception;
+ use GuzzleHttp\Client;
+ use GuzzleHttp\Message\AbstractMessage;
+@@ -205,4 +207,28 @@ class ApiTestCase extends KernelTestCase
+ 
+         $this->printDebug($output);
+     }
++
++    protected function createUser($username, $plainPassword = 'foo')
++    {
++        $user = new User();
++        $user->setUsername($username);
++        $user->setEmail($username.'@foo.com');
++        $password = $this->getService('security.password_encoder')
++            ->encodePassword($user, $plainPassword);
++        $user->setPassword($password);
++
++        $em = $this->getEntityManager();
++        $em->persist($user);
++        $em->flush();
++
++        return $user;
++    }
++
++    /**
++     * @return EntityManager
++     */
++    protected function getEntityManager()
++    {
++        return $this->getService('doctrine.orm.entity_manager');
++    }
+ }
+diff --git a/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php b/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
+index 89e031b..165e8c6 100644
+--- a/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
++++ b/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
+@@ -5,6 +5,13 @@ use AppBundle\Test\ApiTestCase;
+ 
+ class ProgrammerControllerTest extends ApiTestCase
+ {
++    protected function setUp()
++    {
++        parent::setUp();
++
++        $this->createUser('weaverryan');
++    }
++
+     public function testPOST()
+     {
+         $data = array(

@@ -1,0 +1,26 @@
+diff --git a/src/AppBundle/Controller/Api/ProgrammerController.php b/src/AppBundle/Controller/Api/ProgrammerController.php
+index 1bf6918..4070e0a 100644
+--- a/src/AppBundle/Controller/Api/ProgrammerController.php
++++ b/src/AppBundle/Controller/Api/ProgrammerController.php
+@@ -173,6 +173,9 @@ class ProgrammerController extends BaseController
+             'errors' => $errors
+         ];
+ 
+-        return new JsonResponse($data, 400);
++        $response = new JsonResponse($data, 400);
++        $response->headers->set('Content-Type', 'application/problem+json');
++
++        return $response;
+     }
+ }
+diff --git a/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php b/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
+index 79071fc..b1b8b05 100644
+--- a/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
++++ b/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
+@@ -142,5 +142,6 @@ class ProgrammerControllerTest extends ApiTestCase
+         $this->asserter()->assertResponsePropertyExists($response, 'errors.nickname');
+         $this->asserter()->assertResponsePropertyEquals($response, 'errors.nickname[0]', 'Please enter a clever nickname');
+         $this->asserter()->assertResponsePropertyDoesNotExist($response, 'errors.avatarNumber');
++        $this->assertEquals('application/problem+json', $response->getHeader('Content-Type'));
+     }
+ }

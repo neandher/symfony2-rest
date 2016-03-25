@@ -1,0 +1,79 @@
+diff --git a/src/AppBundle/Controller/BaseController.php b/src/AppBundle/Controller/BaseController.php
+index 5ef4b79..520d1d2 100644
+--- a/src/AppBundle/Controller/BaseController.php
++++ b/src/AppBundle/Controller/BaseController.php
+@@ -126,6 +126,13 @@ abstract class BaseController extends Controller
+         $context = new SerializationContext();
+         $context->setSerializeNull(true);
+ 
++        $request = $this->get('request_stack')->getCurrentRequest();
++        $groups = array('Default');
++        if ($request->query->get('deep')) {
++            $groups[] = 'deep';
++        }
++        $context->setGroups($groups);
++
+         return $this->container->get('jms_serializer')
+             ->serialize($data, $format, $context);
+     }
+diff --git a/src/AppBundle/Entity/Programmer.php b/src/AppBundle/Entity/Programmer.php
+index 357a053..ee358f4 100644
+--- a/src/AppBundle/Entity/Programmer.php
++++ b/src/AppBundle/Entity/Programmer.php
+@@ -66,6 +66,8 @@ class Programmer
+     /**
+      * @ORM\ManyToOne(targetEntity="User")
+      * @ORM\JoinColumn(nullable=false)
++     * @Serializer\Groups({"deep"})
++     * @Serializer\Expose()
+      */
+     private $user;
+ 
+diff --git a/src/AppBundle/Entity/User.php b/src/AppBundle/Entity/User.php
+index 29fcaac..00df5b2 100644
+--- a/src/AppBundle/Entity/User.php
++++ b/src/AppBundle/Entity/User.php
+@@ -5,7 +5,10 @@ namespace AppBundle\Entity;
+ use Doctrine\ORM\Mapping as ORM;
+ use Symfony\Component\Security\Core\User\UserInterface;
+ 
++use JMS\Serializer\Annotation as Serializer;
++
+ /**
++ * @Serializer\ExclusionPolicy("all")
+  * @ORM\Table(name="battle_user")
+  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
+  */
+@@ -19,6 +22,7 @@ class User implements UserInterface
+     private $id;
+ 
+     /**
++     * @Serializer\Expose()
+      * @ORM\Column(type="string", unique=true)
+      */
+     private $username;
+diff --git a/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php b/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
+index e647186..9f300bd 100644
+--- a/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
++++ b/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
+@@ -56,6 +56,20 @@ class ProgrammerControllerTest extends ApiTestCase
+         );
+     }
+ 
++    public function testGETProgrammerDeep()
++    {
++        $this->createProgrammer(array(
++            'nickname' => 'UnitTester',
++            'avatarNumber' => 3,
++        ));
++
++        $response = $this->client->get('/api/programmers/UnitTester?deep=1');
++        $this->assertEquals(200, $response->getStatusCode());
++        $this->asserter()->assertResponsePropertiesExist($response, array(
++            'user.username'
++        ));
++    }
++
+     public function testGETProgrammersCollection()
+     {
+         $this->createProgrammer(array(

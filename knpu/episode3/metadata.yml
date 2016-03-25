@@ -1,0 +1,50 @@
+title:  Symfony RESTful API: Basics++ (Course 3)
+summary: |
+    The [basics](http://knpuniversity.com/screencast/symfony-rest), check!
+    [Errors](http://knpuniversity.com/screencast/symfony-rest), double check!
+    Now let's get back to some *core* API concepts and take things up a level.
+
+    * REST Pagination
+    * Including next/prev pagination links
+    * Filtering collections
+    * Advanced serialization customization (serializer subscriber)
+    * Including links via custom annotations
+    * Evaluating expressions
+    * Making embedded resources configurable/conditional
+
+    The REST of the Symfony Series:
+
+    * [Part 1: Basics](http://knpuniversity.com/screencast/symfony-rest)
+    * [Part 2: Errors](http://knpuniversity.com/screencast/symfony-rest2)
+    * [Part 3: Basics++](http://knpuniversity.com/screencast/symfony-rest3)
+    * [Part 4: Authentication](http://knpuniversity.com/screencast/symfony-rest4)
+    * [Part 5: Hypermedia](http://knpuniversity.com/screencast/symfony-rest5)
+
+illustration: rest-sf-3.png
+tuts_hero:
+    start_step: "errors-only-affect-api"
+    finish_step: "serialization-deep-option"
+
+chapters:
+    pagination-test:
+        is_free: true
+        video_key: 152305257
+    pagerfanta-pagination:
+        is_free: true
+        video_key: 153824766
+    pagination-links:
+        video_key: 153826498  
+    reusable-pagination-system:
+        video_key: 153827098
+    filtering:
+        video_key: 153829769
+    serialization-event-subscriber:
+        video_key: 153832161
+    custom-serialization-field:
+        video_key: 153963661  
+    links-via-annotations:
+        video_key: 153965971  
+    evaluating-expression:
+        video_key: 153965278
+    conditionally-embedding-relations:
+        video_key: 153973809

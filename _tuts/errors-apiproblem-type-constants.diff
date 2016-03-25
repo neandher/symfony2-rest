@@ -1,0 +1,26 @@
+diff --git a/src/AppBundle/Api/ApiProblem.php b/src/AppBundle/Api/ApiProblem.php
+index 618df9f..d4e24a2 100644
+--- a/src/AppBundle/Api/ApiProblem.php
++++ b/src/AppBundle/Api/ApiProblem.php
+@@ -7,6 +7,8 @@ namespace AppBundle\Api;
+  */
+ class ApiProblem
+ {
++    const TYPE_VALIDATION_ERROR = 'validation_error';
++
+     private $statusCode;
+ 
+     private $type;
+diff --git a/src/AppBundle/Controller/Api/ProgrammerController.php b/src/AppBundle/Controller/Api/ProgrammerController.php
+index a98a51b..4f78a9e 100644
+--- a/src/AppBundle/Controller/Api/ProgrammerController.php
++++ b/src/AppBundle/Controller/Api/ProgrammerController.php
+@@ -170,7 +170,7 @@ class ProgrammerController extends BaseController
+ 
+         $apiProblem = new ApiProblem(
+             400,
+-            'validation_error',
++            ApiProblem::TYPE_VALIDATION_ERROR,
+             'There was a validation error'
+         );
+         $apiProblem->set('errors', $errors);

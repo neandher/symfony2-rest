@@ -1,0 +1,25 @@
+diff --git a/src/AppBundle/EventListener/ApiExceptionSubscriber.php b/src/AppBundle/EventListener/ApiExceptionSubscriber.php
+index 5466d2f..4973223 100644
+--- a/src/AppBundle/EventListener/ApiExceptionSubscriber.php
++++ b/src/AppBundle/EventListener/ApiExceptionSubscriber.php
+@@ -3,11 +3,19 @@
+ namespace AppBundle\EventListener;
+ 
+ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
++use Symfony\Component\HttpKernel\KernelEvents;
+ 
+ class ApiExceptionSubscriber implements EventSubscriberInterface
+ {
++    public function onKernelException()
++    {
++
++    }
++
+     public static function getSubscribedEvents()
+     {
+-        // TODO: Implement getSubscribedEvents() method.
++        return array(
++            KernelEvents::EXCEPTION => 'onKernelException'
++        );
+     }
+ }

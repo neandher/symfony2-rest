@@ -1,0 +1,36 @@
+diff --git a/src/AppBundle/Api/ApiProblemException.php b/src/AppBundle/Api/ApiProblemException.php
+new file mode 100644
+index 0000000..f12de49
+--- /dev/null
++++ b/src/AppBundle/Api/ApiProblemException.php
+@@ -0,0 +1,9 @@
++<?php
++
++namespace AppBundle\Api;
++
++use Symfony\Component\HttpKernel\Exception\HttpException;
++
++class ApiProblemException extends HttpException
++{
++}
+diff --git a/src/AppBundle/Controller/Api/ProgrammerController.php b/src/AppBundle/Controller/Api/ProgrammerController.php
+index ade8a62..4273618 100644
+--- a/src/AppBundle/Controller/Api/ProgrammerController.php
++++ b/src/AppBundle/Controller/Api/ProgrammerController.php
+@@ -3,6 +3,7 @@
+ namespace AppBundle\Controller\Api;
+ 
+ use AppBundle\Api\ApiProblem;
++use AppBundle\Api\ApiProblemException;
+ use AppBundle\Controller\BaseController;
+ use AppBundle\Entity\Programmer;
+ use AppBundle\Form\ProgrammerType;
+@@ -145,7 +146,7 @@ class ProgrammerController extends BaseController
+         if ($data === null) {
+             $apiProblem = new ApiProblem(400, ApiProblem::TYPE_INVALID_REQUEST_BODY_FORMAT);
+ 
+-            // now what?
++            // now what...
+         }
+ 
+         $clearMissing = $request->getMethod() != 'PATCH';

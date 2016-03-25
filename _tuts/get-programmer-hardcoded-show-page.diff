@@ -1,0 +1,36 @@
+diff --git a/src/AppBundle/Controller/Api/ProgrammerController.php b/src/AppBundle/Controller/Api/ProgrammerController.php
+index dda6c71..c63535b 100644
+--- a/src/AppBundle/Controller/Api/ProgrammerController.php
++++ b/src/AppBundle/Controller/Api/ProgrammerController.php
+@@ -35,4 +35,13 @@ class ProgrammerController extends BaseController
+ 
+         return $response;
+     }
++
++    /**
++     * @Route("/api/programmers/{nickname}")
++     * @Method("GET")
++     */
++    public function showAction($nickname)
++    {
++        return new Response('Hello '.$nickname);
++    }
+ }
+diff --git a/testing.php b/testing.php
+index f935694..b9dbd1d 100644
+--- a/testing.php
++++ b/testing.php
+@@ -16,9 +16,13 @@ $data = array(
+     'tagLine' => 'a test dev!'
+ );
+ 
++// 1) Create a programmer resource
+ $response = $client->post('/api/programmers', [
+     'body' => json_encode($data)
+ ]);
+ 
++// 2) GET a programmer resource
++$response = $client->get('/api/programmers/'.$nickname);
++
+ echo $response;
+ echo "\n\n";

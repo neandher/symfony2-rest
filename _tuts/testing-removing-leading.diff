@@ -1,0 +1,73 @@
+diff --git a/app/phpunit.xml.dist b/app/phpunit.xml.dist
+index b6716e6..6090fdd 100644
+--- a/app/phpunit.xml.dist
++++ b/app/phpunit.xml.dist
+@@ -16,7 +16,7 @@
+     </testsuites>
+ 
+     <php>
+-        <env name="TEST_BASE_URL" value="http://localhost:8000/app_test.php" />
++        <env name="TEST_BASE_URL" value="http://localhost:8000" />
+     </php>
+ 
+     <filter>
+diff --git a/src/AppBundle/Test/ApiTestCase.php b/src/AppBundle/Test/ApiTestCase.php
+index 7ef7790..be61811 100644
+--- a/src/AppBundle/Test/ApiTestCase.php
++++ b/src/AppBundle/Test/ApiTestCase.php
+@@ -8,6 +8,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+ use Doctrine\ORM\EntityManager;
+ use Exception;
+ use GuzzleHttp\Client;
++use GuzzleHttp\Event\BeforeEvent;
+ use GuzzleHttp\Message\AbstractMessage;
+ use GuzzleHttp\Message\ResponseInterface;
+ use GuzzleHttp\Subscriber\History;
+@@ -56,6 +57,15 @@ class ApiTestCase extends KernelTestCase
+         self::$staticClient->getEmitter()
+             ->attach(self::$history);
+ 
++        // guaranteeing that /app_test.php is prefixed to all URLs
++        self::$staticClient->getEmitter()
++            ->on('before', function(BeforeEvent $event) {
++                $path = $event->getRequest()->getPath();
++                if (strpos($path, '/api') === 0) {
++                    $event->getRequest()->setPath('/app_test.php'.$path);
++                }
++            });
++
+         self::bootKernel();
+     }
+ 
+diff --git a/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php b/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
+index 55fec0e..1db7e1a 100644
+--- a/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
++++ b/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
+@@ -27,7 +27,7 @@ class ProgrammerControllerTest extends ApiTestCase
+ 
+         $this->assertEquals(201, $response->getStatusCode());
+         $this->assertTrue($response->hasHeader('Location'));
+-        $this->assertEquals('/api/programmers/ObjectOrienter', $response->getHeader('Location'));
++        $this->assertStringEndsWith('/api/programmers/ObjectOrienter', $response->getHeader('Location'));
+         $finishedData = json_decode($response->getBody(true), true);
+         $this->assertArrayHasKey('nickname', $finishedData);
+         $this->assertEquals('ObjectOrienter', $finishedData['nickname']);
+@@ -63,7 +63,6 @@ class ProgrammerControllerTest extends ApiTestCase
+         ));
+ 
+         $response = $this->client->get('/api/programmers');
+-        $this->printLastRequestUrl();
+         $this->assertEquals(200, $response->getStatusCode());
+         $this->asserter()->assertResponsePropertyIsArray($response, 'programmers');
+         $this->asserter()->assertResponsePropertyCount($response, 'programmers', 2);
+diff --git a/web/app_test.php b/web/app_test.php
+index 503a56d..0bed2d7 100644
+--- a/web/app_test.php
++++ b/web/app_test.php
+@@ -1,5 +1,5 @@
+ <?php
+-die('working?');
++
+ use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\Debug\Debug;
+ 

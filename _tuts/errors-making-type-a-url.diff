@@ -1,0 +1,33 @@
+diff --git a/src/AppBundle/EventListener/ApiExceptionSubscriber.php b/src/AppBundle/EventListener/ApiExceptionSubscriber.php
+index 8fa8911..228d95e 100644
+--- a/src/AppBundle/EventListener/ApiExceptionSubscriber.php
++++ b/src/AppBundle/EventListener/ApiExceptionSubscriber.php
+@@ -50,8 +50,14 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
+             }
+         }
+ 
++        $data = $apiProblem->toArray();
++        // making type a URL, to a temporarily fake page
++        if ($data['type'] != 'about:blank') {
++            $data['type'] = 'http://localhost:8000/docs/errors#'.$data['type'];
++        }
++
+         $response = new JsonResponse(
+-            $apiProblem->toArray(),
++            $data,
+             $apiProblem->getStatusCode()
+         );
+         $response->headers->set('Content-Type', 'application/problem+json');
+diff --git a/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php b/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
+index a4ede58..26ee832 100644
+--- a/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
++++ b/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
+@@ -160,7 +160,7 @@ EOF;
+         ]);
+ 
+         $this->assertEquals(400, $response->getStatusCode());
+-        $this->asserter()->assertResponsePropertyEquals($response, 'type', 'invalid_body_format');
++        $this->asserter()->assertResponsePropertyContains($response, 'type', 'invalid_body_format');
+     }
+ 
+     public function test404Exception()

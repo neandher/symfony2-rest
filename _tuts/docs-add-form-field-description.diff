@@ -1,0 +1,14 @@
+diff --git a/src/AppBundle/Form/ProgrammerType.php b/src/AppBundle/Form/ProgrammerType.php
+index 1961d5a..bc9379b 100644
+--- a/src/AppBundle/Form/ProgrammerType.php
++++ b/src/AppBundle/Form/ProgrammerType.php
+@@ -29,7 +29,8 @@ class ProgrammerType extends AbstractType
+                     'Boy with Hat' => 4,
+                     'Happy Robot' => 5,
+                     'Girl (purple)' => 6,
+-                ]
++                ],
++                'description' => 'Choose one of the pre-made avatars by number'
+             ])
+             ->add('tagLine', TextareaType::class)
+         ;

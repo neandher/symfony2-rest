@@ -1,0 +1,71 @@
+diff --git a/src/AppBundle/Test/ApiTestCase.php b/src/AppBundle/Test/ApiTestCase.php
+new file mode 100644
+index 0000000..4a52a5c
+--- /dev/null
++++ b/src/AppBundle/Test/ApiTestCase.php
+@@ -0,0 +1,30 @@
++<?php
++
++namespace AppBundle\Test;
++
++use GuzzleHttp\Client;
++
++class ApiTestCase extends \PHPUnit_Framework_TestCase
++{
++    private static $staticClient;
++
++    /**
++     * @var Client
++     */
++    protected $client;
++
++    public static function setUpBeforeClass()
++    {
++        self::$staticClient = new Client([
++            'base_url' => 'http://localhost:8000',
++            'defaults' => [
++                'exceptions' => false
++            ]
++        ]);
++    }
++
++    protected function setUp()
++    {
++        $this->client = self::$staticClient;
++    }
++}
+\ No newline at end of file
+diff --git a/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php b/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
+index 055957e..dd5102d 100644
+--- a/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
++++ b/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
+@@ -1,17 +1,12 @@
+ <?php
+ namespace AppBundle\Tests\Controller\Api;
+ 
+-class ProgrammerControllerTest extends \PHPUnit_Framework_TestCase
++use AppBundle\Test\ApiTestCase;
++
++class ProgrammerControllerTest extends ApiTestCase
+ {
+     public function testPOST()
+     {
+-        $client = new \GuzzleHttp\Client([
+-            'base_url' => 'http://localhost:8000',
+-            'defaults' => [
+-                'exceptions' => false
+-            ]
+-        ]);
+-
+         $nickname = 'ObjectOrienter'.rand(0, 999);
+         $data = array(
+             'nickname' => $nickname,
+@@ -20,7 +15,7 @@ class ProgrammerControllerTest extends \PHPUnit_Framework_TestCase
+         );
+ 
+         // 1) Create a programmer resource
+-        $response = $client->post('/api/programmers', [
++        $response = $this->client->post('/api/programmers', [
+             'body' => json_encode($data)
+         ]);
+ 

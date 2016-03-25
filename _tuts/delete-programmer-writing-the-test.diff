@@ -1,0 +1,20 @@
+diff --git a/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php b/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
+index 4bf53f0..f6084f1 100644
+--- a/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
++++ b/src/AppBundle/Tests/Controller/Api/ProgrammerControllerTest.php
+@@ -90,4 +90,15 @@ class ProgrammerControllerTest extends ApiTestCase
+         // the nickname is immutable on edit
+         $this->asserter()->assertResponsePropertyEquals($response, 'nickname', 'CowboyCoder');
+     }
++
++    public function testDELETEProgrammer()
++    {
++        $this->createProgrammer(array(
++            'nickname' => 'UnitTester',
++            'avatarNumber' => 3,
++        ));
++
++        $response = $this->client->delete('/api/programmers/UnitTester');
++        $this->assertEquals(204, $response->getStatusCode());
++    }
+ }

@@ -1,0 +1,59 @@
+title:  Symfony RESTful API: Authentication with JWT (Course 4)
+summary: |
+    After 3 tutorials, we've got a nice API, But we've been completely ignoring
+    authentication. Thanks to some modern tools, this will be *such* a treat:
+
+    * Understanding JSON web tokens (JWT)
+    * Creating, signing & returning JWT's
+    * Using Guard for a custom JWT authentication system
+    * Sending tokens on the Authorization header
+    * Proper API errors for invalid credentials and missing credentials
+    * Choosing to split into 2 firewalls
+
+    The REST of the Symfony Series:
+    
+    * [Part 1: Basics](http://knpuniversity.com/screencast/symfony-rest)
+    * [Part 2: Errors](http://knpuniversity.com/screencast/symfony-rest2)
+    * [Part 3: Basics++](http://knpuniversity.com/screencast/symfony-rest3)
+    * [Part 4: Authentication](http://knpuniversity.com/screencast/symfony-rest4)
+    * [Part 5: Hypermedia](http://knpuniversity.com/screencast/symfony-rest5)
+
+illustration: rest-sf-4.png
+tuts_hero:
+    start_step: "upgrade-to-symfony-3"
+    finish_step: "Errors: Making type a URL"
+
+chapters:
+    deny-access:
+        is_finished: false
+        video_key: ~
+    json-web-token:
+        is_finished: false
+        video_key: ~
+    lexikjwt-authentication-bundle:
+        is_finished: false
+        video_key: ~ 
+    token-test:
+        is_finished: false
+        video_key: ~
+    create-json-web-token:
+        is_finished: false
+        video_key: ~
+    send-token-in-request:
+        is_finished: false
+        video_key: ~
+    jwt-guard-authenticator:
+        is_finished: false
+        video_key: ~
+    always-require-auth:
+        is_finished: false
+        video_key: ~
+    entry-point-multiple-firewalls:
+        is_finished: false
+        video_key: ~
+    auth-api-problem:
+        is_finished: false
+        video_key: ~
+    handling-invalid-token:
+        is_finished: false
+        video_key: ~

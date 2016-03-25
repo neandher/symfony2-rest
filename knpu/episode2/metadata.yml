@@ -1,0 +1,63 @@
+title:  Symfony RESTful API: Errors (Course 2)
+summary: |
+    In [course 1](http://knpuniversity.com/screencast/symfony-rest), we
+    added our basic endpoints *with* some nice tests (yes!).
+    
+    Now, we turn to a *huge* part of APIs: handling and returning consistent
+    errors. Seriously, this is more important than you might think - which
+    is why we're covering this in episode 2.
+
+    So, let's handle errors, and let's do it gracefully:
+
+    * Handling Form Validation errors and response
+    * Disabling csrf_protection
+    * Introducing the api-problem JSON format
+    * Exception Listener!
+    * Consistent errors *everywhere*: 404's, 500's, oh my!
+    * Handling "extra fields" in your form
+
+    The REST of the Symfony Series:
+    
+    * [Part 1: Basics](http://knpuniversity.com/screencast/symfony-rest)
+    * [Part 2: Errors](http://knpuniversity.com/screencast/symfony-rest2)
+    * [Part 3: Basics++](http://knpuniversity.com/screencast/symfony-rest3)
+    * [Part 4: Authentication](http://knpuniversity.com/screencast/symfony-rest4)
+    * [Part 5: Hypermedia](http://knpuniversity.com/screencast/symfony-rest5)
+
+illustration: rest-ep2.png
+tuts_hero:
+    start_step: "Serialize: Whitelisting properties"
+    finish_step: "Errors: Making type a URL"
+
+chapters:
+    validation-errors-test:
+        is_free: true
+        video_key:   140091830
+    validation-errors-response:
+        is_free: true
+        video_key:   140091835
+    put-validation-and-csrf:
+        is_free: true
+        video_key:   140091834
+    api-problem-format:
+        video_key:   140091833
+    api-problem-class:
+        video_key:   140091832
+    problem-type-constants:
+        video_key:   140091839
+    httpexception-invalid-json:
+        video_key:   140091838
+    invalid-json-api-problem:
+        video_key:   140091840
+    api-problem-exception:
+        video_key:   140091841
+    why-exceptions-are-html:
+        video_key:   140091837
+    api-exception-subscriber:
+        video_key:   140091842
+    handle-404s:
+        video_key:   140091846
+    helpful-details-key:
+        video_key:   140091844
+    debugging-cleanup:
+        video_key:   140091845

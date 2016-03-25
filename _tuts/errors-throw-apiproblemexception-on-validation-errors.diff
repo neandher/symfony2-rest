@@ -1,0 +1,15 @@
+diff --git a/src/AppBundle/Controller/Api/ProgrammerController.php b/src/AppBundle/Controller/Api/ProgrammerController.php
+index a82ad4a..fee9716 100644
+--- a/src/AppBundle/Controller/Api/ProgrammerController.php
++++ b/src/AppBundle/Controller/Api/ProgrammerController.php
+@@ -181,9 +181,6 @@ class ProgrammerController extends BaseController
+         );
+         $apiProblem->set('errors', $errors);
+ 
+-        $response = new JsonResponse($apiProblem->toArray(), $apiProblem->getStatusCode());
+-        $response->headers->set('Content-Type', 'application/problem+json');
+-
+-        return $response;
++        throw new ApiProblemException($apiProblem);
+     }
+ }

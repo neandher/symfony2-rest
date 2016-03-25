@@ -1,0 +1,48 @@
+diff --git a/app/config/services.yml b/app/config/services.yml
+index e4903dd..dd7aeb7 100644
+--- a/app/config/services.yml
++++ b/app/config/services.yml
+@@ -19,6 +19,6 @@ services:
+ 
+     api_exception_subscriber:
+         class: AppBundle\EventListener\ApiExceptionSubscriber
+-        arguments: []
++        arguments: ['%kernel.debug%']
+         tags:
+-            - { name: kernel.event_subscriber }
+\ No newline at end of file
++            - { name: kernel.event_subscriber }
+diff --git a/src/AppBundle/EventListener/ApiExceptionSubscriber.php b/src/AppBundle/EventListener/ApiExceptionSubscriber.php
+index 4c2fbc9..8fa8911 100644
+--- a/src/AppBundle/EventListener/ApiExceptionSubscriber.php
++++ b/src/AppBundle/EventListener/ApiExceptionSubscriber.php
+@@ -12,14 +12,28 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+ 
+ class ApiExceptionSubscriber implements EventSubscriberInterface
+ {
++    private $debug;
++
++    public function __construct($debug)
++    {
++        $this->debug = $debug;
++    }
++
+     public function onKernelException(GetResponseForExceptionEvent $event)
+     {
+         $e = $event->getException();
+ 
++        $statusCode = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
++
++        // allow 500 errors to be thrown
++        if ($this->debug && $statusCode >= 500) {
++            return;
++        }
++
+         if ($e instanceof ApiProblemException) {
+             $apiProblem = $e->getApiProblem();
+         } else {
+-            $statusCode = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
++
+ 
+             $apiProblem = new ApiProblem(
+                 $statusCode
