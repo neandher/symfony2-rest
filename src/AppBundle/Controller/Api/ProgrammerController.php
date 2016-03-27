@@ -9,7 +9,6 @@ use AppBundle\Form\UpdateProgrammerType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -35,9 +34,7 @@ class ProgrammerController extends BaseController
         $em->persist($programmer);
         $em->flush();
 
-        $data = $this->serializeProgrammer($programmer);
-
-        $response = new JsonResponse($data, 201);
+        $response = $this->createApiResponse($programmer, 201);
 
         $programmerUrl = $this->generateUrl(
             'api_programmers_show',
@@ -72,10 +69,7 @@ class ProgrammerController extends BaseController
             );
         }
 
-        $data = $this->serializeProgrammer($programmer);
-
-        $response = new JsonResponse($data, 200);
-        $response->headers->set('Content-Type', 'application/json');
+        $response = $this->createApiResponse($programmer, 200);
 
         return $response;
     }
@@ -90,26 +84,9 @@ class ProgrammerController extends BaseController
             ->getRepository('AppBundle:Programmer')
             ->findAll();
 
-        $data = array('programmers' => array());
-
-        foreach ($programmers as $programmer) {
-            $data['programmers'][] = $this->serializeProgrammer($programmer);
-        }
-
-        $response = new JsonResponse($data, 200);
-        $response->headers->set('Content-Type', 'application/json');
+        $response = $this->createApiResponse(['programmers' => $programmers], 200);
 
         return $response;
-    }
-
-    private function serializeProgrammer(Programmer $programmer)
-    {
-        return array(
-            'nickname'     => $programmer->getNickname(),
-            'avatarNumber' => $programmer->getAvatarNumber(),
-            'powerLevel'   => $programmer->getPowerLevel(),
-            'tagLine'      => $programmer->getTagLine(),
-        );
     }
 
     /**
@@ -117,7 +94,7 @@ class ProgrammerController extends BaseController
      * @Method({"PUT", "PATCH"})
      * @param $nickname
      * @param Request $request
-     * @return JsonResponse
+     * @return Response
      */
     public function updateAction($nickname, Request $request)
     {
@@ -140,9 +117,7 @@ class ProgrammerController extends BaseController
         $em->persist($programmer);
         $em->flush();
 
-        $data = $this->serializeProgrammer($programmer);
-
-        $response = new JsonResponse($data, 200);
+        $response = $this->createApiResponse($programmer, 200);
 
         return $response;
     }
@@ -152,7 +127,7 @@ class ProgrammerController extends BaseController
      * @Method("DELETE")
      * @param $nickname
      * @param Request $request
-     * @return JsonResponse
+     * @return Response
      */
     public function deleteAction($nickname, Request $request)
     {
