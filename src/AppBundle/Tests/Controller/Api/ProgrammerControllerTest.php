@@ -62,6 +62,7 @@ class ProgrammerControllerTest extends ApiTestCase
             )
         );
         $this->asserter()->assertResponsePropertyEquals($response, 'nickname', 'UnitTester');
+        $this->debugResponse($response);
     }
 
     public function testGETProgrammersCollection()
@@ -139,7 +140,7 @@ class ProgrammerControllerTest extends ApiTestCase
         $this->asserter()->assertResponsePropertyEquals($response, 'avatarNumber', 2);
     }
 
-    public function testDELETEProgrammer($nickname, Request $request)
+    public function testDELETEProgrammer()
     {
         $this->createProgrammer(
             array(
