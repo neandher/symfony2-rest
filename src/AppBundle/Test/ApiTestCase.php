@@ -86,7 +86,11 @@ class ApiTestCase extends KernelTestCase
         // purposefully not calling parent class, which shuts down the kernel
     }
 
-    protected function onNotSuccessfulTest(Exception $e)
+    /**
+     * @param Exception $e
+     * @throws Exception
+     */
+    protected function onNotSuccessfulTest(\Exception $e)
     {
         if (self::$history && $lastResponse = self::$history->getLastResponse()) {
             $this->printDebug('');
@@ -99,6 +103,7 @@ class ApiTestCase extends KernelTestCase
 
         throw $e;
     }
+
 
     private function purgeDatabase()
     {

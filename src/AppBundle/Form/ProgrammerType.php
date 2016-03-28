@@ -47,6 +47,7 @@ class ProgrammerType extends AbstractType
             [
                 'data_class' => 'AppBundle\Entity\Programmer',
                 'is_edit'    => false,
+                'csrf_protection' => false,
             ]
         );
     }
