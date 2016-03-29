@@ -39,6 +39,7 @@ class ProgrammerControllerTest extends ApiTestCase
         $finishedData = json_decode($response->getBody(true), true);
         $this->assertArrayHasKey('nickname', $finishedData);
         $this->assertEquals($nickname, $finishedData['nickname']);
+        $this->debugResponse($response);
     }
 
     public function testGETProgrammer()
@@ -222,7 +223,8 @@ EOF;
 
         $this->debugResponse($response);
         $this->assertEquals(400, $response->getStatusCode());
-        $this->asserter()->assertResponsePropertyEquals($response, 'type', 'invalid_body_format');
+        //$this->asserter()->assertResponsePropertyEquals($response, 'type', 'invalid_body_format');
+        $this->asserter()->assertResponsePropertyContains($response, 'type', 'invalid_body_format');
     }
 
     public function test404Exception()
@@ -232,6 +234,7 @@ EOF;
         $this->assertEquals('application/problem+json', $response->getHeader('Content-Type'));
         $this->asserter()->assertResponsePropertyEquals($response, 'type', 'about:blank');
         $this->asserter()->assertResponsePropertyEquals($response, 'title', 'Not Found');
+        $this->asserter()->assertResponsePropertyEquals($response, 'detail', 'No programmer with nickname "fake"');
         $this->debugResponse($response);
     }
 

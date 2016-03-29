@@ -12,9 +12,27 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class ApiExceptionSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @var
+     */
+    private $debug;
+
+    /**
+     * ApiExceptionSubscriber constructor.
+     * @param $debug
+     */
+    public function __construct($debug)
+    {
+        $this->debug = $debug;
+    }
 
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
+        // only reply to /api URLs
+        if (strpos($event->getRequest()->getPathInfo(), '/api') !== 0) {
+            return;
+        }
+
         $e = $event->getException();
 
         if ($e instanceof ApiProblemException) {
@@ -25,10 +43,24 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
             $apiProblem = new ApiProblem(
                 $statusCode
             );
+
+            if ($this->debug && $statusCode == 500) {
+                return;
+            }
+        }
+
+        if ($e instanceof HttpExceptionInterface) {
+            $apiProblem->set('detail', $e->getMessage());
+        }
+
+        $data = $apiProblem->toArray();
+
+        if ($data['type'] != 'about:blank') {
+            $data['type'] = 'http://localhost:8000/docs/errors#'.$data['type'];
         }
 
         $response = new JsonResponse(
-            $apiProblem->toArray(),
+            $data,
             $apiProblem->getStatusCode()
         );
 
