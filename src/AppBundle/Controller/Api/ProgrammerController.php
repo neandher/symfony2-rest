@@ -11,10 +11,8 @@ use AppBundle\Form\UpdateProgrammerType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProgrammerController extends BaseController
 {
@@ -83,16 +81,19 @@ class ProgrammerController extends BaseController
     }
 
     /**
-     * @Route("/api/programmers")
+     * @Route("/api/programmers", name="api_programmers_collection")
      * @Method("GET")
      */
-    public function listAction()
+    public function listAction(Request $request)
     {
-        $programmers = $this->getDoctrine()
+        $qb = $this->getDoctrine()
             ->getRepository('AppBundle:Programmer')
-            ->findAll();
+            ->findAllQueryBuilder();
 
-        $response = $this->createApiResponse(['programmers' => $programmers], 200);
+        $paginatedCollection = $this->get('pagination_factory')
+            ->createCollection($qb, $request, 'api_programmers_collection');
+
+        $response = $this->createApiResponse($paginatedCollection);
 
         return $response;
     }
