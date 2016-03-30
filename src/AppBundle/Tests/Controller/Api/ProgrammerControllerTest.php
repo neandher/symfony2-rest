@@ -63,7 +63,8 @@ class ProgrammerControllerTest extends ApiTestCase
             )
         );
         $this->asserter()->assertResponsePropertyEquals($response, 'nickname', 'UnitTester');
-        //$this->debugResponse($response);
+        $this->asserter()->assertResponsePropertyEquals($response, 'uri', $this->adjustUri('/api/programmers/UnitTester'));
+        $this->debugResponse($response);
     }
 
     public function testGETProgrammersCollection()
@@ -138,6 +139,58 @@ class ProgrammerControllerTest extends ApiTestCase
         $this->debugResponse($response);
     }
 
+    public function testGETProgrammersCollectionPagination()
+    {
+        $this->createProgrammer(array(
+            'nickname' => 'willnotmatch',
+            'avatarNumber' => 5,
+        ));
+
+        for ($i = 0; $i < 25; $i++) {
+            $this->createProgrammer(array(
+                'nickname' => 'Programmer' . $i,
+                'avatarNumber' => 3,
+            ));
+        }
+
+        // page 1
+
+        $response = $this->client->get('/api/programmers?filter=programmer');
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->asserter()->assertResponsePropertyEquals($response, 'items[5].nickname', 'Programmer5');
+        $this->asserter()->assertResponsePropertyEquals($response, 'count', 10);
+        $this->asserter()->assertResponsePropertyEquals($response, 'total', 25);
+        $this->asserter()->assertResponsePropertyExists($response, '_links.next');
+
+        $this->debugResponse($response);
+
+        // page 2
+
+        $nextLink = $this->asserter()->readResponseProperty($response, '_links.next');
+        $response = $this->client->get($nextLink);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->asserter()->assertResponsePropertyEquals($response, 'items[5].nickname', 'Programmer15');
+        $this->asserter()->assertResponsePropertyEquals($response, 'count', 10);
+
+        $this->debugResponse($response);
+
+        // last page
+
+        $lastLink = $this->asserter()->readResponseProperty($response, '_links.last');
+        $response = $this->client->get($lastLink);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->asserter()->assertResponsePropertyEquals($response, 'items[4].nickname', 'Programmer24');
+        $this->asserter()->assertResponsePropertyDoesNotExist($response, 'programmers[5].name');
+        $this->asserter()->assertResponsePropertyEquals($response, 'count', 5);
+
+        $this->debugResponse($response);
+    }
 
     protected function createProgrammer(array $data)
     {
