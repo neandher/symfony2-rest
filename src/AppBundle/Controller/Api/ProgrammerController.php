@@ -86,7 +86,6 @@ class ProgrammerController extends BaseController
      */
     public function listAction(Request $request)
     {
-
         $filter = $request->query->get('filter');
 
         $qb = $this->getDoctrine()
