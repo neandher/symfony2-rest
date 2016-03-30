@@ -62,7 +62,6 @@ class LinkSerializationSubscriber implements EventSubscriberInterface
             if ($annotation instanceof Link) {
                 $uri = $this->router->generate(
                     $annotation->route,
-                    //$annotation->params
                     $this->resolveParams($annotation->params, $object)
                 );
                 $links[$annotation->name] = $uri;

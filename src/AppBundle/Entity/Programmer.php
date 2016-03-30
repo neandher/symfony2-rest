@@ -44,7 +44,7 @@ class Programmer
      * @var integer
      *
      * @ORM\Column(name="avatarNumber", type="integer")
-     * @Serializer\Expose
+     * @Serializer\Expose()
      */
     private $avatarNumber;
 
@@ -52,7 +52,7 @@ class Programmer
      * @var string
      *
      * @ORM\Column(name="tagLine", type="string", length=255, nullable=true)
-     * @Serializer\Expose
+     * @Serializer\Expose()
      */
     private $tagLine;
 
@@ -60,13 +60,15 @@ class Programmer
      * @var integer
      *
      * @ORM\Column(name="powerLevel", type="integer")
-     * @Serializer\Expose
+     * @Serializer\Expose()
      */
     private $powerLevel = 0;
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(nullable=false)
+     * @Serializer\Groups({"deep"})
+     * @Serializer\Expose()
      */
     private $user;
 
