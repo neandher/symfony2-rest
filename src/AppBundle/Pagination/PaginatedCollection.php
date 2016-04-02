@@ -61,7 +61,7 @@ class PaginatedCollection
     /**
      * @var array
      */
-    private $links = array();
+    private $_links = array();
 
     /**
      * PaginatedCollection constructor.
