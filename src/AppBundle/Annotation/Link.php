@@ -18,11 +18,17 @@ class Link
     public $name;
 
     /**
-     * @Required
-     *
      * @var string
      */
     public $route;
 
+    /**
+     * @var array
+     */
     public $params = array();
+
+    /**
+     * @var string
+     */
+    public $url;
 }

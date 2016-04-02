@@ -32,15 +32,14 @@ class LinkSerializationSubscriber implements EventSubscriberInterface
     {
         $this->router = $router;
         $this->annotationReader = $annotationReader;
-        $this->expressionLanguage  = new ExpressionLanguage();
+        $this->expressionLanguage = new ExpressionLanguage();
     }
 
     public static function getSubscribedEvents()
     {
         return array(
             array(
-                'event' => 'serializer.post_serialize',
-                'event' => 'serializer.post_serialize',
+                'event'  => 'serializer.post_serialize',
                 'method' => 'onPostSerialize',
                 'format' => 'json',
             )
@@ -60,11 +59,17 @@ class LinkSerializationSubscriber implements EventSubscriberInterface
 
         foreach ($annotations as $annotation) {
             if ($annotation instanceof Link) {
-                $uri = $this->router->generate(
-                    $annotation->route,
-                    $this->resolveParams($annotation->params, $object)
-                );
-                $links[$annotation->name] = $uri;
+                if ($annotation->url) {
+                    $uri = $this->evaluate($annotation->url, $object);
+                } else {
+                    $uri = $this->router->generate(
+                        $annotation->route,
+                        $this->resolveParams($annotation->params, $object)
+                    );
+                }
+                if ($uri) {
+                    $links[$annotation->name] = $uri;
+                }
             }
         }
 
@@ -76,10 +81,15 @@ class LinkSerializationSubscriber implements EventSubscriberInterface
     private function resolveParams(array $params, $object)
     {
         foreach ($params as $key => $param) {
-            $params[$key] = $this->expressionLanguage
-                ->evaluate($param, array('object' => $object));
+            $params[$key] = $this->evaluate($param, $object);
         }
 
         return $params;
+    }
+
+    private function evaluate($expression, $object)
+    {
+        return $this->expressionLanguage
+            ->evaluate($expression, array('object' => $object));
     }
 }
