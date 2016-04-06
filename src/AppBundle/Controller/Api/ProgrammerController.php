@@ -10,10 +10,16 @@ use AppBundle\Form\ProgrammerType;
 use AppBundle\Form\UpdateProgrammerType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class ProgrammerController
+ *
+ * @Security("is_granted('ROLE_USER')")
+ */
 class ProgrammerController extends BaseController
 {
 
@@ -25,7 +31,7 @@ class ProgrammerController extends BaseController
      */
     public function newAction(Request $request)
     {
-        $this->denyAccessUnlessGranted('ROLE_USER');
+        //$this->denyAccessUnlessGranted('ROLE_USER');
 
         $programmer = new Programmer();
         $form = $this->createForm(new ProgrammerType(), $programmer);
@@ -36,7 +42,9 @@ class ProgrammerController extends BaseController
             return $this->throwApiProblemValidationException($form);
         }
 
-        $programmer->setUser($this->findUserByUsername('weaverryan'));
+        //$programmer->setUser($this->findUserByUsername('weaverryan'));
+
+        $programmer->setUser($this->getUser());
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($programmer);

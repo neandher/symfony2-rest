@@ -32,8 +32,13 @@ class TokenControllerTest extends ApiTestCase
             'auth' => ['weaverryan', 'IH8Pizza']
         ]);
 
+        //$this->asserter()->assertResponsePropertyExists($response, 'token');
+        
         $this->assertEquals(401, $response->getStatusCode());
-        $this->asserter()->assertResponsePropertyExists($response, 'token');
+        $this->assertEquals('application/problem+json', $response->getHeader('Content-Type'));
+        $this->asserter()->assertResponsePropertyEquals($response, 'type', 'about:blank');
+        $this->asserter()->assertResponsePropertyEquals($response, 'title', 'Unauthorized');
+        $this->asserter()->assertResponsePropertyEquals($response, 'detail', 'No programmer with nickname "fake"');
 
         $this->debugResponse($response);
 
