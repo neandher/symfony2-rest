@@ -13,23 +13,29 @@ class ProgrammerControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->createUser('weaverryan');
+
     }
 
-    public function testPost()
+    public function testPOSTProgrammerWorks()
     {
+
+        $token = $this->getService('lexik_jwt_authentication.encoder')->encode(['username' => 'weaverryan']);
 
         $nickname = 'ObjectOrienter' . rand(0, 999);
 
         $data = array(
-            'nickname' => $nickname,
+            'nickname'     => $nickname,
             'avatarNumber' => 5,
-            'tagLine' => 'a test dev'
+            'tagLine'      => 'a test dev'
         );
 
         $response = $this->client->post(
             '/api/programmers',
             [
-                'body' => json_encode($data)
+                'body'    => json_encode($data),
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token
+                ]
             ]
         );
 
@@ -46,7 +52,7 @@ class ProgrammerControllerTest extends ApiTestCase
     {
         $this->createProgrammer(
             array(
-                'nickname' => 'UnitTester',
+                'nickname'     => 'UnitTester',
                 'avatarNumber' => 3,
             )
         );
@@ -63,7 +69,11 @@ class ProgrammerControllerTest extends ApiTestCase
             )
         );
         $this->asserter()->assertResponsePropertyEquals($response, 'nickname', 'UnitTester');
-        $this->asserter()->assertResponsePropertyEquals($response, '_links.self', $this->adjustUri('/api/programmers/UnitTester'));
+        $this->asserter()->assertResponsePropertyEquals(
+            $response,
+            '_links.self',
+            $this->adjustUri('/api/programmers/UnitTester')
+        );
         $this->debugResponse($response);
     }
 
@@ -71,7 +81,7 @@ class ProgrammerControllerTest extends ApiTestCase
     {
         $this->createProgrammer(
             array(
-                'nickname' => 'UnitTester',
+                'nickname'     => 'UnitTester',
                 'avatarNumber' => 3,
             )
         );
@@ -87,13 +97,13 @@ class ProgrammerControllerTest extends ApiTestCase
     {
         $this->createProgrammer(
             array(
-                'nickname' => 'UnitTester',
+                'nickname'     => 'UnitTester',
                 'avatarNumber' => 3,
             )
         );
         $this->createProgrammer(
             array(
-                'nickname' => 'CowboyCoder',
+                'nickname'     => 'CowboyCoder',
                 'avatarNumber' => 5,
             )
         );
@@ -110,10 +120,12 @@ class ProgrammerControllerTest extends ApiTestCase
     {
 
         for ($i = 0; $i < 25; $i++) {
-            $this->createProgrammer(array(
-                'nickname' => 'Programmer' . $i,
-                'avatarNumber' => 3,
-            ));
+            $this->createProgrammer(
+                array(
+                    'nickname'     => 'Programmer' . $i,
+                    'avatarNumber' => 3,
+                )
+            );
         }
 
         // page 1
@@ -157,16 +169,20 @@ class ProgrammerControllerTest extends ApiTestCase
 
     public function testGETProgrammersCollectionPagination()
     {
-        $this->createProgrammer(array(
-            'nickname' => 'willnotmatch',
-            'avatarNumber' => 5,
-        ));
+        $this->createProgrammer(
+            array(
+                'nickname'     => 'willnotmatch',
+                'avatarNumber' => 5,
+            )
+        );
 
         for ($i = 0; $i < 25; $i++) {
-            $this->createProgrammer(array(
-                'nickname' => 'Programmer' . $i,
-                'avatarNumber' => 3,
-            ));
+            $this->createProgrammer(
+                array(
+                    'nickname'     => 'Programmer' . $i,
+                    'avatarNumber' => 3,
+                )
+            );
         }
 
         // page 1
@@ -213,7 +229,7 @@ class ProgrammerControllerTest extends ApiTestCase
         $data = array_merge(
             array(
                 'powerLevel' => rand(0, 10),
-                'user' => $this->getEntityManager()->getRepository('AppBundle:User')->findAny()
+                'user'       => $this->getEntityManager()->getRepository('AppBundle:User')->findAny()
             ),
             $data
         );
@@ -238,16 +254,16 @@ class ProgrammerControllerTest extends ApiTestCase
     {
         $this->createProgrammer(
             array(
-                'nickname' => 'CowboyCoder',
+                'nickname'     => 'CowboyCoder',
                 'avatarNumber' => 5,
-                'tagLine' => 'foo',
+                'tagLine'      => 'foo',
             )
         );
 
         $data = array(
-            'nickname' => 'CowboyCoder',
+            'nickname'     => 'CowboyCoder',
             'avatarNumber' => 2,
-            'tagLine' => 'foo',
+            'tagLine'      => 'foo',
         );
 
         $response = $this->client->put(
@@ -264,7 +280,7 @@ class ProgrammerControllerTest extends ApiTestCase
     {
         $this->createProgrammer(
             array(
-                'nickname' => 'UnitTester',
+                'nickname'     => 'UnitTester',
                 'avatarNumber' => 3,
             )
         );
@@ -277,9 +293,9 @@ class ProgrammerControllerTest extends ApiTestCase
     {
         $this->createProgrammer(
             array(
-                'nickname' => 'CowboyCoder',
+                'nickname'     => 'CowboyCoder',
                 'avatarNumber' => 5,
-                'tagLine' => 'foo',
+                'tagLine'      => 'foo',
             )
         );
 
@@ -304,7 +320,7 @@ class ProgrammerControllerTest extends ApiTestCase
 
         $data = array(
             'avatarNumber' => 5,
-            'tagLine' => 'a test dev'
+            'tagLine'      => 'a test dev'
         );
 
         $response = $this->client->post(
@@ -315,13 +331,20 @@ class ProgrammerControllerTest extends ApiTestCase
         );
 
         $this->assertEquals(400, $response->getStatusCode());
-        $this->asserter()->assertResponsePropertiesExist($response, array(
-            'type',
-            'title',
-            'errors',
-        ));
+        $this->asserter()->assertResponsePropertiesExist(
+            $response,
+            array(
+                'type',
+                'title',
+                'errors',
+            )
+        );
         $this->asserter()->assertResponsePropertyExists($response, 'errors.nickname');
-        $this->asserter()->assertResponsePropertyEquals($response, 'errors.nickname[0]', 'Please enter a clever nickname');
+        $this->asserter()->assertResponsePropertyEquals(
+            $response,
+            'errors.nickname[0]',
+            'Please enter a clever nickname'
+        );
         $this->asserter()->assertResponsePropertyDoesNotExist($response, 'errors.avatarNumber');
         $this->assertEquals('application/problem+json', $response->getHeader('Content-Type'));
         $this->debugResponse($response);
@@ -336,9 +359,12 @@ class ProgrammerControllerTest extends ApiTestCase
     "tagLine": "I'm from a test!"
 }
 EOF;
-        $response = $this->client->post('/api/programmers', [
-            'body' => $invalidBody
-        ]);
+        $response = $this->client->post(
+            '/api/programmers',
+            [
+                'body' => $invalidBody
+            ]
+        );
 
         $this->debugResponse($response);
         $this->assertEquals(400, $response->getStatusCode());
@@ -363,9 +389,9 @@ EOF;
         $nickname = 'ObjectOrienter' . rand(0, 999);
 
         $data = array(
-            'nickname' => $nickname,
+            'nickname'     => $nickname,
             'avatarNumber' => 5,
-            'tagLine' => 'a test dev'
+            'tagLine'      => 'a test dev'
         );
 
         $response = $this->client->post(

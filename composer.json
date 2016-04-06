@@ -26,7 +26,8 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "hautelook/alice-bundle": "0.2.*",
         "jms/serializer-bundle": "^1.1",
-        "white-october/pagerfanta-bundle": "^1.0"
+        "white-october/pagerfanta-bundle": "^1.0",
+        "lexik/jwt-authentication-bundle": "^1.4"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
