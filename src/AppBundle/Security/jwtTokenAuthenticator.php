@@ -2,12 +2,15 @@
 
 namespace AppBundle\Security;
 
+use AppBundle\Api\ApiProblem;
+use AppBundle\Api\ResponseFactory;
 use Doctrine\ORM\EntityManager;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\TokenExtractor\AuthorizationHeaderTokenExtractor;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
@@ -21,18 +24,28 @@ class jwtTokenAuthenticator extends AbstractGuardAuthenticator
      * @var JWTEncoderInterface
      */
     private $jwtEncoder;
+
     /**
      * @var EntityManager
      */
     private $em;
 
     /**
-     * jwtTokenAuthenticator constructor.
+     * @var ResponseFactory
      */
-    public function __construct(JWTEncoderInterface $jwtEncoder, EntityManager $em)
+    private $responseFactory;
+
+    /**
+     * jwtTokenAuthenticator constructor.
+     * @param JWTEncoderInterface $jwtEncoder
+     * @param EntityManager $em
+     * @param ResponseFactory $responseFactory
+     */
+    public function __construct(JWTEncoderInterface $jwtEncoder, EntityManager $em, ResponseFactory $responseFactory)
     {
         $this->jwtEncoder = $jwtEncoder;
         $this->em = $em;
+        $this->responseFactory = $responseFactory;
     }
 
     /**
@@ -45,7 +58,7 @@ class jwtTokenAuthenticator extends AbstractGuardAuthenticator
 
         $token = $extractor->extract($request);
 
-        if(!$token){
+        if (!$token) {
             return null;
         }
 
@@ -61,15 +74,15 @@ class jwtTokenAuthenticator extends AbstractGuardAuthenticator
     {
         $data = $this->jwtEncoder->decode($credentials);
 
-        if($data === FALSE){
+        if ($data === FALSE) {
             Throw new CustomUserMessageAuthenticationException('Invalid token!');
         }
 
         $username = $data['username'];
 
         $user = $this->em->getRepository('AppBundle:User')->findOneBy(['username' => $username]);
-        
-        if(is_null($user)){
+
+        if (is_null($user)) {
             Throw new CustomUserMessageAuthenticationException('User not found!');
         }
 
@@ -93,7 +106,10 @@ class jwtTokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        // TODO: Implement onAuthenticationFailure() method.
+        $apiProblem = new ApiProblem(401);
+        $apiProblem->set('detail', $exception->getMessageKey());
+
+        return $this->responseFactory->createResponse($apiProblem);
     }
 
     /**
@@ -122,6 +138,12 @@ class jwtTokenAuthenticator extends AbstractGuardAuthenticator
      */
     public function start(Request $request, AuthenticationException $authException = null)
     {
-        return new JsonResponse('Auth required', 401);
+        $apiProblem = new ApiProblem(401);
+
+        $message = $authException ? $authException->getMessageKey() : 'missing credentials';
+
+        $apiProblem->set('detail', $message);
+
+        return $this->responseFactory->createResponse($apiProblem);
     }
 }
