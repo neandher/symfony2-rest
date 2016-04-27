@@ -3,6 +3,7 @@
 namespace AppBundle\Test;
 
 use AppBundle\Entity\Programmer;
+use AppBundle\Entity\Project;
 use AppBundle\Entity\User;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManager;
@@ -275,6 +276,19 @@ class ApiTestCase extends KernelTestCase
         $this->getEntityManager()->flush();
 
         return $programmer;
+    }
+
+    protected function createProject($name)
+    {
+        $project = new Project();
+
+        $project->setName($name);
+        $project->setDifficultyLevel(rand(1,10));
+
+        $this->getEntityManager()->persist($project);
+        $this->getEntityManager()->flush();
+
+        return $project;
     }
 
     protected function AuthorizedHeaders($username, array $headers = array())
