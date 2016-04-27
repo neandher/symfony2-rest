@@ -38,7 +38,7 @@ class TokenControllerTest extends ApiTestCase
         $this->assertEquals('application/problem+json', $response->getHeader('Content-Type'));
         $this->asserter()->assertResponsePropertyEquals($response, 'type', 'about:blank');
         $this->asserter()->assertResponsePropertyEquals($response, 'title', 'Unauthorized');
-        $this->asserter()->assertResponsePropertyEquals($response, 'detail', 'No programmer with nickname "fake"');
+        $this->asserter()->assertResponsePropertyEquals($response, 'detail', 'Invalid credentials.');
 
         $this->debugResponse($response);
 

@@ -2,6 +2,7 @@
 
 namespace AppBundle\Test;
 
+use AppBundle\Entity\Programmer;
 use AppBundle\Entity\User;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\ORM\EntityManager;
@@ -15,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class ApiTestCase extends KernelTestCase
 {
@@ -59,12 +61,15 @@ class ApiTestCase extends KernelTestCase
             ->attach(self::$history);
 
         self::$staticClient->getEmitter()
-            ->on('before', function (BeforeEvent $event) {
-                $path = $event->getRequest()->getPath();
-                if (strpos($path, '/api') === 0) {
-                    $event->getRequest()->setPath('/app_test.php' . $path);
+            ->on(
+                'before',
+                function (BeforeEvent $event) {
+                    $path = $event->getRequest()->getPath();
+                    if (strpos($path, '/api') === 0) {
+                        $event->getRequest()->setPath('/app_test.php' . $path);
+                    }
                 }
-            });
+            );
 
         self::bootKernel();
     }
@@ -131,7 +136,7 @@ class ApiTestCase extends KernelTestCase
     protected function debugResponse(ResponseInterface $response)
     {
         $this->printDebug(AbstractMessage::getStartLineAndHeaders($response));
-        $body = (string)$response->getBody();
+        $body = (string) $response->getBody();
 
         $contentType = $response->getHeader('Content-Type');
         if ($contentType == 'application/json' || strpos($contentType, '+json') !== false) {
@@ -243,14 +248,41 @@ class ApiTestCase extends KernelTestCase
         $em = $this->getEntityManager();
         $em->persist($user);
         $em->flush();
+
         return $user;
+    }
+
+    protected function createProgrammer(array $data)
+    {
+        $data = array_merge(
+            array(
+                'powerLevel' => rand(0, 10),
+                'user'       => $this->getEntityManager()
+                    ->getRepository('AppBundle:User')
+                    ->findAny()
+            ),
+            $data
+        );
+        
+        $accessor = PropertyAccess::createPropertyAccessor();
+        $programmer = new Programmer();
+        
+        foreach ($data as $key => $value) {
+            $accessor->setValue($programmer, $key, $value);
+        }
+        
+        $this->getEntityManager()->persist($programmer);
+        $this->getEntityManager()->flush();
+
+        return $programmer;
     }
 
     protected function AuthorizedHeaders($username, array $headers = array())
     {
         $token = $this->getService('lexik_jwt_authentication.encoder')->encode(['username' => $username]);
 
-        $headers = array_merge($headers,
+        $headers = array_merge(
+            $headers,
             [
                 'Authorization' => 'Bearer ' . $token
             ]
@@ -275,6 +307,7 @@ class ApiTestCase extends KernelTestCase
         if ($this->responseAsserter === null) {
             $this->responseAsserter = new ResponseAsserter();
         }
+
         return $this->responseAsserter;
     }
 
