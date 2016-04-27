@@ -410,4 +410,32 @@ EOF;
 
         $this->debugResponse($response);
     }
+
+    public function testBadToken()
+    {
+
+        $nickname = 'ObjectOrienter' . rand(0, 999);
+
+        $data = array(
+            'nickname' => $nickname,
+            'avatarNumber' => 5,
+            'tagLine' => 'a test dev'
+        );
+
+        $response = $this->client->post(
+            '/api/programmers',
+            [
+                'body' => json_encode($data),
+                'headers' => [
+                    'Authorization' => 'Bearer WRONG'
+                ]
+            ]
+        );
+
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals('application/problem+json', $response->getHeader('Content-Type'));
+
+        $this->debugResponse($response);
+    }
+
 }

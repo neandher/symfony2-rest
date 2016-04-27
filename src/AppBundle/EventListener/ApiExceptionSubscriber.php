@@ -4,6 +4,7 @@ namespace AppBundle\EventListener;
 
 use AppBundle\Api\ApiProblem;
 use AppBundle\Api\ApiProblemException;
+use AppBundle\Api\ResponseFactory;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -18,12 +19,19 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
     private $debug;
 
     /**
+     * @var ResponseFactory
+     */
+    private $responseFactory;
+
+    /**
      * ApiExceptionSubscriber constructor.
      * @param $debug
+     * @param ResponseFactory $responseFactory
      */
-    public function __construct($debug)
+    public function __construct($debug, ResponseFactory $responseFactory)
     {
         $this->debug = $debug;
+        $this->responseFactory = $responseFactory;
     }
 
     public function onKernelException(GetResponseForExceptionEvent $event)
@@ -35,36 +43,32 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
 
         $e = $event->getException();
 
+        $statusCode = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
+
+        // allow 500 errors to be thrown
+        if ($this->debug && $statusCode == 500) {
+            return;
+        }
+
         if ($e instanceof ApiProblemException) {
             $apiProblem = $e->getApiProblem();
         } else {
-            $statusCode = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
-
             $apiProblem = new ApiProblem(
                 $statusCode
             );
-
-            if ($this->debug && $statusCode == 500) {
-                return;
-            }
         }
 
+        /*
+         * If it's an HttpException message (e.g. for 404, 403),
+         * we'll say as a rule that the exception message is safe
+         * for the client. Otherwise, it could be some sensitive
+         * low-level exception, which should *not* be exposed
+         */
         if ($e instanceof HttpExceptionInterface) {
             $apiProblem->set('detail', $e->getMessage());
         }
 
-        $data = $apiProblem->toArray();
-
-        if ($data['type'] != 'about:blank') {
-            $data['type'] = 'http://localhost:8000/docs/errors#'.$data['type'];
-        }
-
-        $response = new JsonResponse(
-            $data,
-            $apiProblem->getStatusCode()
-        );
-
-        $response->headers->set('Content-Type', 'application/problem+json');
+        $response = $this->responseFactory->createResponse($apiProblem);
 
         $event->setResponse($response);
     }

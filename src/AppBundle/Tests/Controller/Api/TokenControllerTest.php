@@ -23,7 +23,6 @@ class TokenControllerTest extends ApiTestCase
         $this->asserter()->assertResponsePropertyExists($response, 'token');
 
         $this->debugResponse($response);
-
     }
 
     public function testPOSTTokenInvalidCredentials()
