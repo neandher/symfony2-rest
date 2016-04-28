@@ -27,7 +27,7 @@ class BattleController extends BaseController
     public function newAction(Request $request)
     {
         $battleModel = new BattleModel();
-        $form = $this->createForm(BattleType::class, $battleModel);
+        $form = $this->createForm(BattleType::class, $battleModel, ['user' => $this->getUser()]);
 
         $this->processForm($request, $form);
 

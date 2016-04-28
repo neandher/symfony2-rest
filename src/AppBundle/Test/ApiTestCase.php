@@ -255,23 +255,30 @@ class ApiTestCase extends KernelTestCase
 
     protected function createProgrammer(array $data)
     {
+        if (array_key_exists('user', $data)) {
+            $username = $data['user'];
+            unset($data['user']);
+        } else {
+            $username = 'weaverryan';
+        }
+
         $data = array_merge(
             array(
                 'powerLevel' => rand(0, 10),
                 'user'       => $this->getEntityManager()
                     ->getRepository('AppBundle:User')
-                    ->findAny()
+                    ->findUserByUsername($username)
             ),
             $data
         );
         
         $accessor = PropertyAccess::createPropertyAccessor();
         $programmer = new Programmer();
-        
+
         foreach ($data as $key => $value) {
             $accessor->setValue($programmer, $key, $value);
         }
-        
+
         $this->getEntityManager()->persist($programmer);
         $this->getEntityManager()->flush();
 
@@ -283,7 +290,7 @@ class ApiTestCase extends KernelTestCase
         $project = new Project();
 
         $project->setName($name);
-        $project->setDifficultyLevel(rand(1,10));
+        $project->setDifficultyLevel(rand(1, 10));
 
         $this->getEntityManager()->persist($project);
         $this->getEntityManager()->flush();
