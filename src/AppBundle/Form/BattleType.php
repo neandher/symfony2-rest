@@ -14,7 +14,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class BattleType extends AbstractType
 {
 
-    /**
+    /**g
      * @param FormBuilderInterface $builder
      * @param array $options
      */
@@ -31,7 +31,7 @@ class BattleType extends AbstractType
                     'class'         => Programmer::class,
                     'property_path' => 'programmer',
                     'query_builder' => function (ProgrammerRepository $programmerRepository) use ($user) {
-                        $programmerRepository->createQueryBuilderForUser($user);
+                        return $programmerRepository->createQueryBuilderForUser($user);
                     }
                 ]
             );

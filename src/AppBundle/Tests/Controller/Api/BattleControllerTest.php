@@ -11,7 +11,6 @@ class BattleControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->createUser('weaverryan');
-        $this->createUser('someone_else');
     }
 
     public function testPOSTCreateBattle()
@@ -43,11 +42,14 @@ class BattleControllerTest extends ApiTestCase
         $this->asserter()->assertResponsePropertyExists($response, 'didProgrammerWin');
         $this->asserter()->assertResponsePropertyEquals($response, 'project', $project->getId());
         $this->asserter()->assertResponsePropertyEquals($response, 'programmer', 'Fred');
+        $this->asserter()->assertResponsePropertyEquals($response, '_links.programmer', $this->adjustUri('/api/programmers/Fred'));
         $this->debugResponse($response);
     }
 
     public function testPostBattleValidationErrors()
     {
+        $this->createUser('someone_else');
+
         $programmer = $this->createProgrammer(
             [
                 'nickname'     => 'Fred',
@@ -77,7 +79,7 @@ class BattleControllerTest extends ApiTestCase
             'errors.projectId[0]',
             'This value should not be blank.'
         );
-        $this->asserter()->assertResponsePropertyEquals($response, 'errors.programmerId[0]', 'some dummy message');
+        $this->asserter()->assertResponsePropertyEquals($response, 'errors.programmerId[0]', 'This value is not valid.');
         $this->debugResponse($response);
     }
 }
