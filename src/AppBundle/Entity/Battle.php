@@ -2,18 +2,20 @@
 
 namespace AppBundle\Entity;
 
-use AppBundle\Annotation\Link;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Table(name="battle_battle")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\BattleRepository")
  * @Serializer\ExclusionPolicy("all")
- * @Link(
+ * @Hateoas\Relation(
  *     "programmer",
- *     route = "api_programmers_show",
- *     params = { "nickname": "object.getProgrammerNickname()" }
+ *     href = @Hateoas\Route(
+ *          "api_programmers_show",
+ *          parameters = { "nickname" = "expr(object.getProgrammerNickname())" }
+ *     )
  * )
  *
  */
