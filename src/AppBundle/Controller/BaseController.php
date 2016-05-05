@@ -141,7 +141,7 @@ abstract class BaseController extends Controller
         $json = $this->serialize($data);
 
         return new Response($json, $statusCode, array(
-            'Content-Type' => 'application/hal+json'
+            'Content-Type' => 'application/vnd.codebattles+json'
         ));
     }
 
