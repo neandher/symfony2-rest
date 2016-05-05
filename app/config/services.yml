@@ -40,3 +40,6 @@ services:
 
     api.response_factory:
         class: AppBundle\Api\ResponseFactory
+
+    custom_hateoas_json_serializer:
+        class: AppBundle\Serializer\CustomHATEOASJsonSerializer

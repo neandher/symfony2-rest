@@ -15,7 +15,8 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *     href = @Hateoas\Route(
  *          "api_programmers_show",
  *          parameters = { "nickname" = "expr(object.getProgrammerNickname())" }
- *     )
+ *     ),
+ *     embedded="expr(object.getProgrammer())"
  * )
  *
  */

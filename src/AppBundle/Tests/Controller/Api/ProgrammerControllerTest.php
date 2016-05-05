@@ -45,10 +45,11 @@ class ProgrammerControllerTest extends ApiTestCase
         $finishedData = json_decode($response->getBody(true), true);
         $this->assertArrayHasKey('nickname', $finishedData);
         $this->assertEquals($nickname, $finishedData['nickname']);
+        $this->assertEquals('application/hal+json', $response->getHeader('Content-Type'));
         $this->debugResponse($response);
     }
 
-    public function testGETProgrammer()
+    public function testGetProgrammer()
     {
         $this->createProgrammer(
             array(
