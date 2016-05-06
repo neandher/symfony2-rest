@@ -2,6 +2,7 @@
 
 namespace AppBundle\Tests\Controller\Api;
 
+use AppBundle\Battle\BattleManager;
 use AppBundle\Entity\Programmer;
 use AppBundle\Test\ApiTestCase;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -23,15 +24,15 @@ class ProgrammerControllerTest extends ApiTestCase
         $nickname = 'ObjectOrienter' . rand(0, 999);
 
         $data = array(
-            'nickname' => $nickname,
+            'nickname'     => $nickname,
             'avatarNumber' => 5,
-            'tagLine' => 'a test dev'
+            'tagLine'      => 'a test dev'
         );
 
         $response = $this->client->post(
             '/api/programmers',
             [
-                'body' => json_encode($data),
+                'body'    => json_encode($data),
                 'headers' => $this->AuthorizedHeaders('weaverryan'),
                 /*'headers' => [
                     'Authorization' => 'Bearer ' . $token
@@ -53,12 +54,15 @@ class ProgrammerControllerTest extends ApiTestCase
     {
         $this->createProgrammer(
             array(
-                'nickname' => 'UnitTester',
+                'nickname'     => 'UnitTester',
                 'avatarNumber' => 3,
             )
         );
 
-        $response = $this->client->get('/api/programmers/UnitTester', ['headers' => $this->AuthorizedHeaders('weaverryan')]);
+        $response = $this->client->get(
+            '/api/programmers/UnitTester',
+            ['headers' => $this->AuthorizedHeaders('weaverryan')]
+        );
         $this->assertEquals(200, $response->getStatusCode());
         $this->asserter()->assertResponsePropertiesExist(
             $response,
@@ -82,12 +86,15 @@ class ProgrammerControllerTest extends ApiTestCase
     {
         $this->createProgrammer(
             array(
-                'nickname' => 'UnitTester',
+                'nickname'     => 'UnitTester',
                 'avatarNumber' => 3,
             )
         );
 
-        $response = $this->client->get('/api/programmers/UnitTester?deep=1', ['headers' => $this->AuthorizedHeaders('weaverryan')]);
+        $response = $this->client->get(
+            '/api/programmers/UnitTester?deep=1',
+            ['headers' => $this->AuthorizedHeaders('weaverryan')]
+        );
         $this->assertEquals(200, $response->getStatusCode());
         $this->asserter()->assertResponsePropertiesExist($response, array('user.username'));
 
@@ -98,13 +105,13 @@ class ProgrammerControllerTest extends ApiTestCase
     {
         $this->createProgrammer(
             array(
-                'nickname' => 'UnitTester',
+                'nickname'     => 'UnitTester',
                 'avatarNumber' => 3,
             )
         );
         $this->createProgrammer(
             array(
-                'nickname' => 'CowboyCoder',
+                'nickname'     => 'CowboyCoder',
                 'avatarNumber' => 5,
             )
         );
@@ -123,7 +130,7 @@ class ProgrammerControllerTest extends ApiTestCase
         for ($i = 0; $i < 25; $i++) {
             $this->createProgrammer(
                 array(
-                    'nickname' => 'Programmer' . $i,
+                    'nickname'     => 'Programmer' . $i,
                     'avatarNumber' => 3,
                 )
             );
@@ -172,7 +179,7 @@ class ProgrammerControllerTest extends ApiTestCase
     {
         $this->createProgrammer(
             array(
-                'nickname' => 'willnotmatch',
+                'nickname'     => 'willnotmatch',
                 'avatarNumber' => 5,
             )
         );
@@ -180,7 +187,7 @@ class ProgrammerControllerTest extends ApiTestCase
         for ($i = 0; $i < 25; $i++) {
             $this->createProgrammer(
                 array(
-                    'nickname' => 'Programmer' . $i,
+                    'nickname'     => 'Programmer' . $i,
                     'avatarNumber' => 3,
                 )
             );
@@ -188,7 +195,10 @@ class ProgrammerControllerTest extends ApiTestCase
 
         // page 1
 
-        $response = $this->client->get('/api/programmers?filter=programmer', ['headers' => $this->AuthorizedHeaders('weaverryan')]);
+        $response = $this->client->get(
+            '/api/programmers?filter=programmer',
+            ['headers' => $this->AuthorizedHeaders('weaverryan')]
+        );
 
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -230,7 +240,7 @@ class ProgrammerControllerTest extends ApiTestCase
         $data = array_merge(
             array(
                 'powerLevel' => rand(0, 10),
-                'user' => $this->getEntityManager()->getRepository('AppBundle:User')->findAny()
+                'user'       => $this->getEntityManager()->getRepository('AppBundle:User')->findAny()
             ),
             $data
         );
@@ -255,22 +265,22 @@ class ProgrammerControllerTest extends ApiTestCase
     {
         $this->createProgrammer(
             array(
-                'nickname' => 'CowboyCoder',
+                'nickname'     => 'CowboyCoder',
                 'avatarNumber' => 5,
-                'tagLine' => 'foo',
+                'tagLine'      => 'foo',
             )
         );
 
         $data = array(
-            'nickname' => 'CowboyCoder',
+            'nickname'     => 'CowboyCoder',
             'avatarNumber' => 2,
-            'tagLine' => 'foo',
+            'tagLine'      => 'foo',
         );
 
         $response = $this->client->put(
             '/api/programmers/CowboyCoder',
             [
-                'body' => json_encode($data),
+                'body'    => json_encode($data),
                 'headers' => $this->AuthorizedHeaders('weaverryan')
             ]
         );
@@ -282,12 +292,15 @@ class ProgrammerControllerTest extends ApiTestCase
     {
         $this->createProgrammer(
             array(
-                'nickname' => 'UnitTester',
+                'nickname'     => 'UnitTester',
                 'avatarNumber' => 3,
             )
         );
 
-        $response = $this->client->delete('/api/programmers/UnitTester', ['headers' => $this->AuthorizedHeaders('weaverryan')]);
+        $response = $this->client->delete(
+            '/api/programmers/UnitTester',
+            ['headers' => $this->AuthorizedHeaders('weaverryan')]
+        );
         $this->assertEquals(204, $response->getStatusCode());
     }
 
@@ -295,9 +308,9 @@ class ProgrammerControllerTest extends ApiTestCase
     {
         $this->createProgrammer(
             array(
-                'nickname' => 'CowboyCoder',
+                'nickname'     => 'CowboyCoder',
                 'avatarNumber' => 5,
-                'tagLine' => 'foo',
+                'tagLine'      => 'foo',
             )
         );
 
@@ -308,7 +321,7 @@ class ProgrammerControllerTest extends ApiTestCase
         $response = $this->client->patch(
             '/api/programmers/CowboyCoder',
             [
-                'body' => json_encode($data),
+                'body'    => json_encode($data),
                 'headers' => $this->AuthorizedHeaders('weaverryan')
             ]
         );
@@ -323,13 +336,13 @@ class ProgrammerControllerTest extends ApiTestCase
 
         $data = array(
             'avatarNumber' => 5,
-            'tagLine' => 'a test dev'
+            'tagLine'      => 'a test dev'
         );
 
         $response = $this->client->post(
             '/api/programmers',
             [
-                'body' => json_encode($data),
+                'body'    => json_encode($data),
                 'headers' => $this->AuthorizedHeaders('weaverryan')
             ]
         );
@@ -366,7 +379,7 @@ EOF;
         $response = $this->client->post(
             '/api/programmers',
             [
-                'body' => $invalidBody,
+                'body'    => $invalidBody,
                 'headers' => $this->AuthorizedHeaders('weaverryan')
             ]
         );
@@ -394,9 +407,9 @@ EOF;
         $nickname = 'ObjectOrienter' . rand(0, 999);
 
         $data = array(
-            'nickname' => $nickname,
+            'nickname'     => $nickname,
             'avatarNumber' => 5,
-            'tagLine' => 'a test dev'
+            'tagLine'      => 'a test dev'
         );
 
         $response = $this->client->post(
@@ -418,15 +431,15 @@ EOF;
         $nickname = 'ObjectOrienter' . rand(0, 999);
 
         $data = array(
-            'nickname' => $nickname,
+            'nickname'     => $nickname,
             'avatarNumber' => 5,
-            'tagLine' => 'a test dev'
+            'tagLine'      => 'a test dev'
         );
 
         $response = $this->client->post(
             '/api/programmers',
             [
-                'body' => json_encode($data),
+                'body'    => json_encode($data),
                 'headers' => [
                     'Authorization' => 'Bearer WRONG'
                 ]
@@ -439,4 +452,38 @@ EOF;
         $this->debugResponse($response);
     }
 
+    public function testFollowProgrammerBattlesLink()
+    {
+        $programmer = $this->createProgrammer(
+            array(
+                'nickname'     => 'UnitTester',
+                'avatarNumber' => 3,
+            )
+        );
+
+        $project = $this->createProject('cool_project');
+
+        /** @var BattleManager $battleManager */
+        $battleManager = $this->getService('battle.battle_manager');
+
+        $battleManager->battle($programmer, $project);
+        $battleManager->battle($programmer, $project);
+        $battleManager->battle($programmer, $project);
+
+        $response = $this->client->get(
+            '/api/programmers/UnitTester',
+            ['headers' => $this->AuthorizedHeaders('weaverryan')]
+        );
+
+        $this->debugResponse($response);
+
+        $uri = $this->asserter()->readResponseProperty($response, '_links.battles');
+
+        $response = $this->client->get(
+            $uri,
+            ['headers' => $this->AuthorizedHeaders('weaverryan')]
+        );
+
+        $this->debugResponse($response);
+    }
 }
