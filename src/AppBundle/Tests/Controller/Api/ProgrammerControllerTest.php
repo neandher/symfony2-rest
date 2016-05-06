@@ -483,6 +483,8 @@ EOF;
             $uri,
             ['headers' => $this->AuthorizedHeaders('weaverryan')]
         );
+        
+        $this->asserter()->assertResponsePropertyExists($response, 'items');
 
         $this->debugResponse($response);
     }

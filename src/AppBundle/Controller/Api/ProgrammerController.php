@@ -6,6 +6,7 @@ use AppBundle\Controller\BaseController;
 use AppBundle\Entity\Programmer;
 use AppBundle\Form\ProgrammerType;
 use AppBundle\Form\UpdateProgrammerType;
+use AppBundle\Pagination\PaginatedCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -121,10 +122,12 @@ class ProgrammerController extends BaseController
             ->findOneByNickname($nickname);
 
         if (!$programmer) {
-            throw $this->createNotFoundException(sprintf(
-                'No programmer found with nickname "%s"',
-                $nickname
-            ));
+            throw $this->createNotFoundException(
+                sprintf(
+                    'No programmer found with nickname "%s"',
+                    $nickname
+                )
+            );
         }
 
         $form = $this->createForm(new UpdateProgrammerType(), $programmer);
@@ -172,13 +175,25 @@ class ProgrammerController extends BaseController
     /**
      * @Route("/api/programmers/{nickname}/battles", name="api_programmers_battles_list")
      * @Method("GET")
-     * @param $programmer
+     * @param Programmer $programmer
+     * @param Request $request
      * @return Response
      */
-    public function battlesListAction(Programmer $programmer)
+    public function battlesListAction(Programmer $programmer, Request $request)
     {
-        $battles = $this->getDoctrine()->getRepository('AppBundle:Battle')->findBy(['programmer' => $programmer]);
+        $battlesQb = $this->getDoctrine()->getRepository('AppBundle:Battle')->createQueryBuilderForProgrammer(
+            $programmer
+        );
 
-        return $this->createApiResponse($battles);
+        //$collection = new PaginatedCollection($battles, count($battles));
+        
+        $collection = $this->get('pagination_factory')->createCollection(
+            $battlesQb,
+            $request,
+            'api_programmers_battles_list',
+            ['nickname' => $programmer->getNickname()]
+        );
+
+        return $this->createApiResponse($collection);
     }
 }
